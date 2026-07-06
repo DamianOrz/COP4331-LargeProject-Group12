@@ -9,7 +9,8 @@ app.use(bodyParser.json());
 // 1. Configure MongoDB Client Connection
 const MongoClient = require('mongodb').MongoClient;
 
-const url = 'mongodb://mealuser:mealuser1@ac-vktbbkw-shard-00-00.ts0chds.mongodb.net:27017,ac-vktbbkw-shard-00-01.ts0chds.mongodb.net:27017,ac-vktbbkw-shard-00-02.ts0chds.mongodb.net:27017/?ssl=true&replicaSet=atlas-90bp5t-shard-0&authSource=admin&appName=proj2cop4331';
+require('dotenv').config();
+const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 
 client.connect()
