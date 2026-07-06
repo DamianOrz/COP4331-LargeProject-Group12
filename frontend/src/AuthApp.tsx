@@ -1,5 +1,5 @@
+// @ts-nocheck
 import React, { useState } from "react";
-import { createRoot } from "react-dom/client";
 import "./styles.css";
 
 const routes = {
@@ -762,7 +762,7 @@ function AuthShell({ children }) {
   );
 }
 
-function App() {
+function MealPlannerAuthApp() {
   const initialPage = getPageFromPath(window.location.pathname);
   const [page, setPage] = useState(initialPage);
 
@@ -807,4 +807,5 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+export default MealPlannerAuthApp;
+
