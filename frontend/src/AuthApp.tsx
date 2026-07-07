@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import "./styles.css";
 
@@ -32,6 +32,10 @@ const waitForFeedback = (setLoading, onDone) => {
     onDone();
   }, 700);
 };
+
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+const isWeakPassword = (password) => password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password);
+const weakPasswordMessage = "Password is too weak. Use at least 8 characters with a letter and a number.";
 
 function Logo({ small = false }) {
   return (
@@ -184,6 +188,7 @@ function LoginPage({ setPage }) {
     const nextErrors = {};
 
     if (!values.email.trim()) nextErrors.email = "Email is required.";
+    else if (!isValidEmail(values.email)) nextErrors.email = "Enter a valid email address.";
     if (!values.password) nextErrors.password = "Password is required.";
 
     setErrors(nextErrors);
@@ -306,6 +311,7 @@ function ForgotPasswordPage({ setPage }) {
     const nextErrors = {};
 
     if (!email.trim()) nextErrors.email = "Email is required.";
+    else if (!isValidEmail(email)) nextErrors.email = "Enter a valid email address.";
 
     setErrors(nextErrors);
 
@@ -369,6 +375,7 @@ function ResetPasswordPage({ setPage }) {
     const nextErrors = {};
 
     if (!values.password) nextErrors.password = "Password is required.";
+    else if (isWeakPassword(values.password)) nextErrors.password = weakPasswordMessage;
     if (values.confirmPassword !== values.password) nextErrors.confirmPassword = "Passwords must match.";
 
     setErrors(nextErrors);
@@ -621,7 +628,9 @@ function RegisterPage({ setPage }) {
     if (!values.firstName.trim()) nextErrors.firstName = "First name is required.";
     if (!values.lastName.trim()) nextErrors.lastName = "Last name is required.";
     if (!values.email.trim()) nextErrors.email = "Email is required.";
+    else if (!isValidEmail(values.email)) nextErrors.email = "Enter a valid email address.";
     if (!values.password) nextErrors.password = "Password is required.";
+    else if (isWeakPassword(values.password)) nextErrors.password = weakPasswordMessage;
     if (values.confirmPassword !== values.password) nextErrors.confirmPassword = "Passwords must match.";
     if (!values.terms) nextErrors.terms = "You must agree to the terms.";
 
@@ -808,4 +817,5 @@ function MealPlannerAuthApp() {
 }
 
 export default MealPlannerAuthApp;
+
 

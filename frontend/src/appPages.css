@@ -1,0 +1,502 @@
+﻿.planner-app-shell {
+  min-height: 100vh;
+  background: #f7f8f7;
+  color: #18212b;
+}
+
+.planner-topbar {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 40px;
+  border-bottom: 1px solid #dfe4e0;
+  background: #ffffff;
+}
+
+.planner-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #18212b;
+  font-weight: 800;
+}
+
+.planner-brand-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #28733b;
+  font-size: 14px;
+}
+
+.planner-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.planner-nav a {
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: #344052;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.planner-nav a.active,
+.planner-nav a:focus,
+.planner-nav a:hover {
+  color: #1e6f35;
+  background: #eef8f0;
+}
+
+.planner-main {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 36px 0 56px;
+}
+
+.planner-page-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.planner-page-heading h1 {
+  margin: 0 0 8px;
+  color: #15202b;
+  font-size: 36px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.planner-page-heading p {
+  color: #536071;
+  font-size: 16px;
+}
+
+.planner-heading-action {
+  flex: 0 0 auto;
+}
+
+.planner-button,
+.secondary-button,
+.secondary-link,
+.text-button,
+.action-list a,
+.card-actions a,
+.card-actions button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.planner-button {
+  padding: 0 18px;
+  border: 0;
+  color: #ffffff;
+  background: #28733b;
+}
+
+.planner-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.secondary-button,
+.secondary-link,
+.text-button,
+.card-actions a,
+.card-actions button,
+.action-list a {
+  border: 1px solid #cfd7d1;
+  color: #256d37;
+  background: #ffffff;
+}
+
+.secondary-button,
+.text-button,
+.card-actions button {
+  padding: 0 12px;
+}
+
+.secondary-link,
+.card-actions a,
+.action-list a {
+  padding: 0 14px;
+}
+
+.text-button {
+  min-height: 34px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.summary-card,
+.planner-panel,
+.recipe-card {
+  border: 1px solid #dce2de;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(20, 28, 38, 0.06);
+}
+
+.summary-card {
+  padding: 20px;
+}
+
+.summary-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #627083;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.summary-card strong {
+  display: block;
+  color: #17212d;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.planner-grid-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.planner-grid-wide {
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+}
+
+.planner-panel {
+  padding: 22px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.panel-heading h2,
+.planner-panel h2,
+.planner-day h3,
+.recipe-card h2 {
+  margin: 0;
+  color: #17212d;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.panel-heading h2,
+.planner-panel h2,
+.recipe-card h2 {
+  font-size: 22px;
+}
+
+.action-list,
+.card-actions,
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.week-list {
+  display: grid;
+  gap: 12px;
+}
+
+.compact-week-list {
+  gap: 8px;
+}
+
+.week-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef1ef;
+  text-align: left;
+}
+
+.week-row strong,
+.planner-day h3 {
+  color: #1e6f35;
+}
+
+.week-row span,
+.empty-state,
+.planner-panel p,
+.recipe-card p,
+.planned-meal p {
+  color: #536071;
+}
+
+.filter-row,
+.form-grid-three {
+  display: grid;
+  gap: 14px;
+}
+
+.filter-row {
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
+  align-items: end;
+}
+
+.recipe-form,
+.planner-assignment-form {
+  display: grid;
+  gap: 18px;
+}
+
+.recipe-form label,
+.recipe-form fieldset,
+.planner-assignment-form label,
+.filter-row label {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.recipe-form label span,
+.recipe-form legend,
+.planner-assignment-form label span,
+.filter-row label span {
+  color: #17212d;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.recipe-form input,
+.recipe-form textarea,
+.recipe-form select,
+.planner-assignment-form textarea,
+.planner-assignment-form select,
+.filter-row input,
+.filter-row select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #cdd5cf;
+  border-radius: 6px;
+  color: #18212b;
+  background: #ffffff;
+  font: inherit;
+  font-size: 15px;
+}
+
+.recipe-form textarea,
+.planner-assignment-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.recipe-form input[aria-invalid="true"],
+.recipe-form textarea[aria-invalid="true"] {
+  border-color: #c52835;
+  box-shadow: 0 0 0 3px rgba(197, 40, 53, 0.1);
+}
+
+.recipe-form small {
+  color: #b4232f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form-grid-three {
+  grid-template-columns: minmax(0, 1fr) 140px 120px;
+}
+
+.recipe-form fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ingredient-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px 120px auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.planner-message {
+  padding: 11px 13px;
+  border: 1px solid #a9d9b8;
+  border-radius: 6px;
+  color: #1f7138;
+  background: #eef9f1;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.planner-message.error {
+  border-color: #f0b9be;
+  color: #a51f2b;
+  background: #fff3f4;
+}
+
+.recipe-list {
+  display: grid;
+  gap: 14px;
+}
+
+.recipe-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px;
+  text-align: left;
+}
+
+.meal-pill {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #1e6f35;
+  background: #eef8f0;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: capitalize;
+}
+
+.recipe-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  color: #627083;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.detail-meta {
+  margin: 0 0 18px;
+}
+
+.detail-list {
+  margin: 14px 0 0;
+  padding-left: 22px;
+  color: #344052;
+  text-align: left;
+}
+
+.detail-list li + li {
+  margin-top: 8px;
+}
+
+.planner-day {
+  padding: 14px 0;
+  border-bottom: 1px solid #eef1ef;
+  text-align: left;
+}
+
+.planner-day h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.planned-meal {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid #e4e9e5;
+  border-radius: 8px;
+  background: #fbfcfb;
+}
+
+.planned-meal + .planned-meal {
+  margin-top: 8px;
+}
+
+.planned-meal strong {
+  display: block;
+  color: #17212d;
+}
+
+@media (max-width: 860px) {
+  .planner-topbar,
+  .planner-page-heading,
+  .recipe-card,
+  .planned-meal {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .planner-main {
+    width: min(100% - 28px, 720px);
+    padding-top: 24px;
+  }
+
+  .summary-grid,
+  .planner-grid-two,
+  .planner-grid-wide,
+  .filter-row,
+  .form-grid-three,
+  .ingredient-row {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-topbar {
+    padding: 18px 20px;
+  }
+
+  .week-row {
+    grid-template-columns: 1fr;
+  }
+
+  .card-actions,
+  .action-list,
+  .form-actions {
+    width: 100%;
+  }
+
+  .card-actions a,
+  .card-actions button,
+  .action-list a,
+  .planner-button,
+  .secondary-link {
+    width: 100%;
+  }
+}
