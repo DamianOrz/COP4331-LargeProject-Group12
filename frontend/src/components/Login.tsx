@@ -78,6 +78,7 @@ function Login()
                 onChange={handleSetPassword} />
             <input type="submit" id="loginButton" className="buttons" value = "Do It"
                 onClick={doLogin} />
+            <br />
             <span id="loginResult">{message}</span>
         </div>
     );
