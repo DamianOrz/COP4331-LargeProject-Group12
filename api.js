@@ -49,8 +49,8 @@ exports.setApp = function ( app, client )
         var error = '';
         const { login, password } = req.body;
 
-        const db = client.db('COP4331Cards');
-        const results = await db.collection('Users').find({Login:login,Password:password}).toArray();
+        const db = client.db('cop4331');
+        const results = await db.collection('users').find({email: login, password: password}).toArray();
 
         var id = -1;
         var fn = '';
@@ -58,9 +58,9 @@ exports.setApp = function ( app, client )
 
         if( results.length > 0 )
         {
-            id = results[0].UserId; // fixed casing to match actual DB field
-            fn = results[0].FirstName;
-            ln = results[0].LastName;
+            id = results[0]._id; // fixed casing to match actual DB field
+            fn = results[0].firstName;
+            ln = results[0].lastName;
 
             // Generate the secure token packet instead of passing raw strings
             var ret = token.createToken(fn, ln, id);
