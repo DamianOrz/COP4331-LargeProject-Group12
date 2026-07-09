@@ -40,5 +40,6 @@ exports.refresh = function( token )
     var userId = ud.payload.userId;
     var firstName = ud.payload.firstName;
     var lastName = ud.payload.lastName;
-    return _createToken( firstName, lastName, userId );
+    var email = ud.payload.email;
+    return _createToken( firstName, lastName, userId, email );
 }

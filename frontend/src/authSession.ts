@@ -1,4 +1,4 @@
-﻿import type { AuthUser } from './api/authApi';
+﻿﻿import type { AuthUser } from './api/authApi';
 import { retrieveToken } from './tokenStorage';
 
 export interface SessionState {
@@ -7,15 +7,17 @@ export interface SessionState {
   user: AuthUser | null;
 }
 
-const userStorageKey = 'user_data';
 const tokenStorageKey = 'token_data';
 
-function getStoredUser(): AuthUser | null {
-  const rawUser = localStorage.getItem(userStorageKey);
-  if (!rawUser) return null;
+function decodeJwtPayload(token: string): AuthUser | null {
+  const [, payload] = token.split('.');
+  if (!payload) return null;
 
   try {
-    return JSON.parse(rawUser) as AuthUser;
+    // This is a simplified base64-url decoder. A library like `jwt-decode` would be more robust.
+    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = JSON.parse(window.atob(normalizedPayload));
+    return decoded as AuthUser;
   } catch {
     return null;
   }
@@ -36,9 +38,8 @@ function isJwtExpired(token: string): boolean {
 
 export function getSessionState(): SessionState {
   const token = retrieveToken();
-  const user = getStoredUser();
 
-  if (!token || !user) {
+  if (!token) {
     return { isAuthenticated: false, isExpired: false, user: null };
   }
 
@@ -47,10 +48,15 @@ export function getSessionState(): SessionState {
     return { isAuthenticated: false, isExpired: true, user: null };
   }
 
+  const user = decodeJwtPayload(token);
+  if (!user) {
+    clearSession();
+    return { isAuthenticated: false, isExpired: false, user: null };
+  }
+
   return { isAuthenticated: true, isExpired: false, user };
 }
 
 export function clearSession(): void {
   localStorage.removeItem(tokenStorageKey);
-  localStorage.removeItem(userStorageKey);
 }
