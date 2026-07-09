@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../appPages.css';
 
@@ -13,13 +13,20 @@ const navItems = [
   { label: 'Dashboard', path: '/app' },
   { label: 'Recipes', path: '/app/recipes' },
   { label: 'Weekly Planner', path: '/app/planner' },
+  { label: 'Grocery List', path: '/app/grocery' },
   { label: 'Account', path: '/app/account' }
 ];
 
 function AppShell({ title, subtitle, action, children }: AppShellProps) {
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`);
+  const isActive = (path: string) => {
+    if (path === '/app') {
+      return location.pathname === '/app';
+    }
+
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
 
   return (
     <div className="planner-app-shell">

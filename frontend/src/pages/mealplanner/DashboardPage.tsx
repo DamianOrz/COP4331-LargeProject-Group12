@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getWeeklyMealPlan, weekdays, type MealPlan } from '../../api/mealPlanApi';
 import { listRecipes, type Recipe } from '../../api/recipeApi';
@@ -75,6 +75,7 @@ function DashboardPage() {
                 <Link to="/app/recipes">View Recipes</Link>
                 <Link to="/app/recipes/new">Create Recipe</Link>
                 <Link to="/app/planner">Open Weekly Planner</Link>
+                <Link to="/app/grocery">View Grocery List</Link>
               </div>
             </div>
 

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { login } from "./api/authApi";
 import { storeToken } from "./tokenStorage";
+import { jwtDecode } from "jwt-decode";
 import "./styles.css";
 
 const routes = {
@@ -146,6 +147,8 @@ function Field({
   error,
   disabled = false
 }) {
+  const [showValue, setShowValue] = useState(false);
+  const inputType = withEye && type === "password" && showValue ? "text" : type;
   const errorId = `${id}-error`;
 
   return (
@@ -155,7 +158,7 @@ function Field({
         {icon && <Icon name={icon} />}
         <input
           id={id}
-          type={type}
+          type={inputType}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
@@ -164,7 +167,14 @@ function Field({
           aria-describedby={error ? errorId : undefined}
         />
         {withEye && (
-          <button className="eye-button" type="button" aria-label={`Show ${label.toLowerCase()}`} disabled={disabled}>
+          <button
+            className="eye-button"
+            type="button"
+            aria-label={showValue ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
+            aria-pressed={showValue}
+            onClick={() => setShowValue(!showValue)}
+            disabled={disabled}
+          >
             <Icon name="eye" />
           </button>
         )}
@@ -214,6 +224,20 @@ function LoginPage({ setPage }) {
       if (result.accessToken) 
       {
         storeToken({ accessToken: result.accessToken });
+
+        const decoded = jwtDecode(result.accessToken);
+        const user = {
+          _id: decoded.userId,
+          id: decoded.userId,
+          firstName: decoded.firstName,
+          lastName: decoded.lastName,
+          email: decoded.email || values.email,
+          isEmailVerified: true,
+          createdAt: new Date().toISOString()
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+
         window.location.assign("/app");
       } 
       else 

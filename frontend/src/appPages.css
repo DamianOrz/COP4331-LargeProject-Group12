@@ -388,9 +388,26 @@
 .recipe-card {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 18px;
   padding: 20px;
   text-align: left;
+}
+
+.recipe-card > div:first-child {
+  min-width: 0;
+}
+
+.card-actions {
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.card-actions a,
+.card-actions button {
+  min-width: 72px;
+  min-height: 40px;
+  padding: 0 14px;
 }
 
 .meal-pill {
@@ -504,5 +521,61 @@
   .planner-button,
   .secondary-link {
     width: 100%;
+  }
+}
+
+
+.grocery-panel {
+  margin-top: 24px;
+}
+
+.grocery-list {
+  display: grid;
+  gap: 12px;
+}
+
+.grocery-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 8px 18px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #dfe4e0;
+  border-radius: 10px;
+  background: #fbfdfb;
+}
+
+.grocery-item label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #18212b;
+  font-weight: 800;
+}
+
+.grocery-item input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: #28733b;
+}
+
+.grocery-item strong {
+  justify-self: end;
+  color: #1e6f35;
+}
+
+.grocery-item small {
+  grid-column: 1 / -1;
+  color: #536071;
+}
+
+@media (max-width: 620px) {
+  .grocery-item {
+    grid-template-columns: 1fr;
+  }
+
+  .grocery-item strong {
+    justify-self: start;
   }
 }
