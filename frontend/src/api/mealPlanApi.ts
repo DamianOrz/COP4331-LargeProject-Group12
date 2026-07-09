@@ -1,11 +1,13 @@
 ﻿import type { MealType } from './recipeApi';
 
+// Mock service now. Replace these internals with Express fetch calls later while keeping the exported function names and response shapes.
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 
 export interface PlannedMeal {
   dayOfWeek: DayOfWeek;
   mealType: MealType;
   recipeId: string;
+  plannedDate?: string;
   notes: string;
 }
 
@@ -27,9 +29,9 @@ let mockMealPlan: MealPlan = {
   userId: 'user-1',
   weekStartDate: '2026-07-06',
   plannedMeals: [
-    { dayOfWeek: 'Monday', mealType: 'dinner', recipeId: 'recipe-1', notes: 'Make extra rice.' },
-    { dayOfWeek: 'Tuesday', mealType: 'breakfast', recipeId: 'recipe-2', notes: '' },
-    { dayOfWeek: 'Wednesday', mealType: 'lunch', recipeId: 'recipe-3', notes: 'Pack before class.' }
+    { dayOfWeek: 'Monday', mealType: 'dinner', recipeId: 'recipe-1', plannedDate: '2026-07-06', notes: 'Make extra rice.' },
+    { dayOfWeek: 'Tuesday', mealType: 'breakfast', recipeId: 'recipe-2', plannedDate: '2026-07-07', notes: '' },
+    { dayOfWeek: 'Wednesday', mealType: 'lunch', recipeId: 'recipe-3', plannedDate: '2026-07-08', notes: 'Pack before class.' }
   ],
   createdAt: '2026-07-01T12:00:00.000Z'
 };

@@ -18,6 +18,7 @@ Test Environment: Built Vite React app tested in headless Microsoft Edge
 /recipes create recipe works with mock service: PASS
 /recipes edit recipe works with mock service: PASS
 /recipes delete recipe works with mock service: PASS
+Recipe not found state: PASS after fix
 /planner displays Monday-Sunday in order: PASS
 /planner assignment updates weekday: PASS
 Mobile 390x844 layout check: PASS

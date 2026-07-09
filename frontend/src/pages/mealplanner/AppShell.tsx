@@ -10,24 +10,27 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Recipes', path: '/recipes' },
-  { label: 'Weekly Planner', path: '/planner' }
+  { label: 'Dashboard', path: '/app' },
+  { label: 'Recipes', path: '/app/recipes' },
+  { label: 'Weekly Planner', path: '/app/planner' },
+  { label: 'Account', path: '/app/account' }
 ];
 
 function AppShell({ title, subtitle, action, children }: AppShellProps) {
   const location = useLocation();
 
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`);
+
   return (
     <div className="planner-app-shell">
       <header className="planner-topbar">
-        <Link className="planner-brand" to="/dashboard" aria-label="Meal Planner dashboard">
+        <Link className="planner-brand" to="/app" aria-label="Meal Planner dashboard">
           <span className="planner-brand-mark">MP</span>
           <span>Meal Planner</span>
         </Link>
         <nav className="planner-nav" aria-label="Primary navigation">
           {navItems.map((item) => (
-            <Link className={location.pathname === item.path ? 'active' : ''} key={item.path} to={item.path}>
+            <Link className={isActive(item.path) ? 'active' : ''} key={item.path} to={item.path}>
               {item.label}
             </Link>
           ))}

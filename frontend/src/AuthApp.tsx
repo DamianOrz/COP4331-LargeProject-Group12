@@ -1,5 +1,7 @@
 ﻿// @ts-nocheck
 import React, { useState } from "react";
+import { login } from "./api/authApi";
+import { storeToken } from "./tokenStorage";
 import "./styles.css";
 
 const routes = {
@@ -175,7 +177,12 @@ function Field({
 function LoginPage({ setPage }) {
   const [values, setValues] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("session") === "expired"
+      ? { type: "error", text: "Your session expired. Please log in again." }
+      : null;
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const updateValue = (field) => (event) => {
@@ -183,7 +190,7 @@ function LoginPage({ setPage }) {
     setErrors({ ...errors, [field]: "" });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = {};
 
@@ -199,9 +206,17 @@ function LoginPage({ setPage }) {
     }
 
     setMessage(null);
-    waitForFeedback(setIsLoading, () => {
+    setIsLoading(true);
+    try {
+      const result = await login({ email: values.email, password: values.password });
+      storeToken({ accessToken: result.token });
+      localStorage.setItem("user_data", JSON.stringify(result.user));
+      window.location.assign("/app");
+    } catch (error) {
       setMessage({ type: "error", text: "Invalid email or password." });
-    });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

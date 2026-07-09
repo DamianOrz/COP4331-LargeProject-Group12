@@ -5,15 +5,16 @@ import { createRecipe, getRecipe, updateRecipe, type Ingredient, type MealType, 
 import AppShell from './AppShell';
 
 interface RouteParams {
-  id?: string;
+  recipeId?: string;
 }
 
 const emptyIngredient: Ingredient = { name: '', quantity: 1, unit: '' };
+const validMealTypes: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
 function RecipeFormPage() {
-  const { id } = useParams<RouteParams>();
+  const { recipeId } = useParams<RouteParams>();
   const history = useHistory();
-  const isEditing = Boolean(id);
+  const isEditing = Boolean(recipeId);
   const [form, setForm] = useState<RecipeInput>({
     recipeName: '',
     description: '',
@@ -25,15 +26,24 @@ function RecipeFormPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(Boolean(id));
+  const [loadError, setLoadError] = useState('');
+  const [isLoading, setIsLoading] = useState(Boolean(recipeId));
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    if (!recipeId) return;
     let isMounted = true;
-    getRecipe(id).then((recipe) => {
-      if (!isMounted) return;
-      if (recipe) {
+    setIsLoading(true);
+    setLoadError('');
+
+    getRecipe(recipeId)
+      .then((recipe) => {
+        if (!isMounted) return;
+        if (!recipe) {
+          setLoadError('Recipe not found.');
+          return;
+        }
+
         setForm({
           recipeName: recipe.recipeName,
           description: recipe.description,
@@ -43,13 +53,20 @@ function RecipeFormPage() {
           prepTime: recipe.prepTime,
           servings: recipe.servings
         });
-      }
-      setIsLoading(false);
-    });
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setLoadError('Failed to load recipe.');
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
+      });
+
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [recipeId]);
 
   const updateField = (field: keyof RecipeInput, value: string | number | MealType | Ingredient[] | string[]) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -61,6 +78,7 @@ function RecipeFormPage() {
       ingredientIndex === index ? { ...ingredient, [field]: value } : ingredient
     );
     updateField('ingredients', nextIngredients);
+    setErrors((current) => ({ ...current, [`ingredient-${index}-${field}`]: '', ingredients: '' }));
   };
 
   const addIngredient = () => updateField('ingredients', [...form.ingredients, { ...emptyIngredient }]);
@@ -74,10 +92,19 @@ function RecipeFormPage() {
     const nextErrors: Record<string, string> = {};
     if (!form.recipeName.trim()) nextErrors.recipeName = 'Recipe name is required.';
     if (!form.description.trim()) nextErrors.description = 'Description is required.';
+    if (!validMealTypes.includes(form.mealType)) nextErrors.mealType = 'Choose a valid meal type.';
     if (!form.ingredients.some((ingredient) => ingredient.name.trim())) nextErrors.ingredients = 'At least one ingredient is required.';
+
+    form.ingredients.forEach((ingredient, index) => {
+      if (!ingredient.name.trim()) nextErrors[`ingredient-${index}-name`] = 'Ingredient name is required.';
+      if (!Number.isFinite(ingredient.quantity) || ingredient.quantity <= 0) {
+        nextErrors[`ingredient-${index}-quantity`] = 'Quantity must be positive.';
+      }
+    });
+
     if (!form.instructions.some((instruction) => instruction.trim())) nextErrors.instructions = 'At least one instruction is required.';
-    if (form.prepTime <= 0) nextErrors.prepTime = 'Prep time must be greater than zero.';
-    if (form.servings <= 0) nextErrors.servings = 'Servings must be greater than zero.';
+    if (!Number.isFinite(form.prepTime) || form.prepTime <= 0) nextErrors.prepTime = 'Prep time must be greater than zero.';
+    if (!Number.isFinite(form.servings) || form.servings <= 0) nextErrors.servings = 'Servings must be greater than zero.';
     return nextErrors;
   };
 
@@ -98,18 +125,22 @@ function RecipeFormPage() {
       instructions: form.instructions.map((instruction) => instruction.trim()).filter(Boolean)
     };
 
-    if (isEditing && id) {
-      await updateRecipe(id, payload);
+    if (isEditing && recipeId) {
+      await updateRecipe(recipeId, payload);
     } else {
       await createRecipe(payload);
     }
 
     setIsSaving(false);
-    history.push('/recipes');
+    history.push('/app/recipes');
   };
 
   if (isLoading) {
     return <AppShell title={isEditing ? 'Edit Recipe' : 'Add Recipe'}><div className="planner-panel">Loading recipe...</div></AppShell>;
+  }
+
+  if (loadError) {
+    return <AppShell title={isEditing ? 'Edit Recipe' : 'Add Recipe'}><div className="planner-panel empty-state" role="alert">{loadError}</div></AppShell>;
   }
 
   return (
@@ -132,11 +163,12 @@ function RecipeFormPage() {
         <div className="form-grid-three">
           <label>
             <span>Meal Type</span>
-            <select value={form.mealType} onChange={(event) => updateField('mealType', event.target.value as MealType)}>
+            <select value={form.mealType} onChange={(event) => updateField('mealType', event.target.value as MealType)} aria-invalid={Boolean(errors.mealType)}>
               <option value="breakfast">Breakfast</option>
               <option value="lunch">Lunch</option>
               <option value="dinner">Dinner</option>
             </select>
+            {errors.mealType && <small>{errors.mealType}</small>}
           </label>
           <label>
             <span>Prep Time</span>
@@ -155,16 +187,18 @@ function RecipeFormPage() {
           {form.ingredients.map((ingredient, index) => (
             <div className="ingredient-row" key={`ingredient-${index}`}>
               <label>
-                <span className="sr-only">Ingredient name</span>
-                <input placeholder="Ingredient" value={ingredient.name} onChange={(event) => updateIngredient(index, 'name', event.target.value)} />
+                <span>Ingredient Name</span>
+                <input value={ingredient.name} onChange={(event) => updateIngredient(index, 'name', event.target.value)} aria-invalid={Boolean(errors[`ingredient-${index}-name`])} />
+                {errors[`ingredient-${index}-name`] && <small>{errors[`ingredient-${index}-name`]}</small>}
               </label>
               <label>
-                <span className="sr-only">Quantity</span>
-                <input type="number" min="0" step="0.25" placeholder="Qty" value={ingredient.quantity} onChange={(event) => updateIngredient(index, 'quantity', Number(event.target.value))} />
+                <span>Quantity</span>
+                <input type="number" min="0.01" step="0.25" value={ingredient.quantity} onChange={(event) => updateIngredient(index, 'quantity', Number(event.target.value))} aria-invalid={Boolean(errors[`ingredient-${index}-quantity`])} />
+                {errors[`ingredient-${index}-quantity`] && <small>{errors[`ingredient-${index}-quantity`]}</small>}
               </label>
               <label>
-                <span className="sr-only">Unit</span>
-                <input placeholder="Unit" value={ingredient.unit} onChange={(event) => updateIngredient(index, 'unit', event.target.value)} />
+                <span>Unit</span>
+                <input value={ingredient.unit} onChange={(event) => updateIngredient(index, 'unit', event.target.value)} />
               </label>
               <button type="button" className="secondary-button" onClick={() => removeIngredient(index)}>Remove</button>
             </div>
@@ -181,7 +215,7 @@ function RecipeFormPage() {
 
         <div className="form-actions">
           <button className="planner-button" type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Recipe'}</button>
-          <Link className="secondary-link" to="/recipes">Cancel</Link>
+          <Link className="secondary-link" to="/app/recipes">Cancel</Link>
         </div>
       </form>
     </AppShell>
@@ -189,4 +223,3 @@ function RecipeFormPage() {
 }
 
 export default RecipeFormPage;
-
