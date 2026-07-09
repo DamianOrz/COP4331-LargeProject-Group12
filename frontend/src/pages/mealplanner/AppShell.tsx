@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../appPages.css';
 
@@ -13,6 +13,7 @@ const navItems = [
   { label: 'Dashboard', path: '/app' },
   { label: 'Recipes', path: '/app/recipes' },
   { label: 'Weekly Planner', path: '/app/planner' },
+  { label: 'Grocery List', path: '/app/grocery' },
   { label: 'Account', path: '/app/account' }
 ];
 

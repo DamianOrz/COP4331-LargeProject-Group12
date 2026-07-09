@@ -1,4 +1,4 @@
-﻿import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import './App.css';
 
 import CardPage from './pages/CardPage';
@@ -9,6 +9,7 @@ import DashboardPage from './pages/mealplanner/DashboardPage';
 import PlannerPage from './pages/mealplanner/PlannerPage';
 import RecipeDetailsPage from './pages/mealplanner/RecipeDetailsPage';
 import RecipeFormPage from './pages/mealplanner/RecipeFormPage';
+import GroceryListPage from './pages/mealplanner/GroceryListPage';
 import RecipeListPage from './pages/mealplanner/RecipeListPage';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <ProtectedRoute path="/app/recipes/:recipeId/edit" exact component={RecipeFormPage} />
         <ProtectedRoute path="/app/recipes/:recipeId" exact component={RecipeDetailsPage} />
         <ProtectedRoute path="/app/planner" exact component={PlannerPage} />
+        <ProtectedRoute path="/app/grocery" exact component={GroceryListPage} />
         <ProtectedRoute path="/app/account" exact component={AccountPage} />
 
         <Route path="/dashboard" exact>
@@ -36,6 +38,9 @@ function App() {
         <Route path="/recipes/:recipeId" exact render={({ match }) => <Redirect to={`/app/recipes/${match.params.recipeId}`} />} />
         <Route path="/planner" exact>
           <Redirect to="/app/planner" />
+        </Route>
+        <Route path="/grocery" exact>
+          <Redirect to="/app/grocery" />
         </Route>
 
         <Route path="/cards" exact>
