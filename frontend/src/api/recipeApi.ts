@@ -1,4 +1,5 @@
-﻿export type MealType = 'breakfast' | 'lunch' | 'dinner';
+// Mock service now. Replace these internals with Express fetch calls later while keeping the exported function names and response shapes.
+export type MealType = 'breakfast' | 'lunch' | 'dinner';
 
 export interface Ingredient {
   name: string;
@@ -104,7 +105,11 @@ export async function listRecipes(filters: RecipeFilters = {}): Promise<Recipe[]
 
 export async function getRecipe(recipeId: string): Promise<Recipe | undefined> {
   await delay();
-  return clone(mockRecipes.find((recipe) => recipe._id === recipeId));
+  const recipe = mockRecipes.find((item) => {
+    const legacyId = (item as Recipe & { id?: string }).id;
+    return String(item._id) === String(recipeId) || (legacyId !== undefined && String(legacyId) === String(recipeId));
+  });
+  return recipe ? clone(recipe) : undefined;
 }
 
 export async function createRecipe(input: RecipeInput): Promise<Recipe> {

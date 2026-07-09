@@ -8,15 +8,28 @@ function DashboardPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     let isMounted = true;
-    Promise.all([listRecipes(), getWeeklyMealPlan()]).then(([recipeData, planData]) => {
-      if (!isMounted) return;
-      setRecipes(recipeData);
-      setMealPlan(planData);
-      setIsLoading(false);
-    });
+    setIsLoading(true);
+    setError('');
+
+    Promise.all([listRecipes(), getWeeklyMealPlan()])
+      .then(([recipeData, planData]) => {
+        if (!isMounted) return;
+        setRecipes(recipeData);
+        setMealPlan(planData);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setError('Failed to load dashboard.');
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
+      });
+
     return () => {
       isMounted = false;
     };
@@ -30,10 +43,12 @@ function DashboardPage() {
     <AppShell
       title="Dashboard"
       subtitle="Plan recipes and assign meals for the week."
-      action={<Link className="planner-button" to="/recipes/new">Add Recipe</Link>}
+      action={<Link className="planner-button" to="/app/recipes/new">Add Recipe</Link>}
     >
       {isLoading ? (
         <div className="planner-panel">Loading dashboard...</div>
+      ) : error ? (
+        <div className="planner-panel empty-state" role="alert">{error}</div>
       ) : (
         <>
           <section className="summary-grid" aria-label="Meal planner summary">
@@ -57,32 +72,36 @@ function DashboardPage() {
                 <h2>Quick Actions</h2>
               </div>
               <div className="action-list">
-                <Link to="/recipes">View Recipes</Link>
-                <Link to="/recipes/new">Create Recipe</Link>
-                <Link to="/planner">Open Weekly Planner</Link>
+                <Link to="/app/recipes">View Recipes</Link>
+                <Link to="/app/recipes/new">Create Recipe</Link>
+                <Link to="/app/planner">Open Weekly Planner</Link>
               </div>
             </div>
 
             <div className="planner-panel">
               <div className="panel-heading">
                 <h2>This Week</h2>
-                <Link to="/planner">Edit</Link>
+                <Link to="/app/planner">Edit</Link>
               </div>
-              <div className="week-list compact-week-list">
-                {weekdays.map((day) => {
-                  const meals = mealPlan?.plannedMeals.filter((meal) => meal.dayOfWeek === day) ?? [];
-                  return (
-                    <div className="week-row" key={day}>
-                      <strong>{day}</strong>
-                      <span>
-                        {meals.length > 0
-                          ? meals.map((meal) => recipes.find((recipe) => recipe._id === meal.recipeId)?.recipeName ?? 'Recipe').join(', ')
-                          : 'No meals planned'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+              {plannedCount === 0 ? (
+                <p className="empty-state">Weekly plan has no meals yet.</p>
+              ) : (
+                <div className="week-list compact-week-list">
+                  {weekdays.map((day) => {
+                    const meals = mealPlan?.plannedMeals.filter((meal) => meal.dayOfWeek === day) ?? [];
+                    return (
+                      <div className="week-row" key={day}>
+                        <strong>{day}</strong>
+                        <span>
+                          {meals.length > 0
+                            ? meals.map((meal) => recipes.find((recipe) => recipe._id === meal.recipeId)?.recipeName ?? 'Recipe').join(', ')
+                            : 'No meals planned'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </section>
         </>

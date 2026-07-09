@@ -4,39 +4,64 @@ import { getRecipe, type Recipe } from '../../api/recipeApi';
 import AppShell from './AppShell';
 
 interface RouteParams {
-  id: string;
+  recipeId: string;
 }
 
 function RecipeDetailsPage() {
-  const { id } = useParams<RouteParams>();
+  const { recipeId } = useParams<RouteParams>();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     let isMounted = true;
-    getRecipe(id).then((data) => {
-      if (!isMounted) return;
-      setRecipe(data ?? null);
-      setIsLoading(false);
-    });
+    setIsLoading(true);
+    setError('');
+
+    getRecipe(recipeId)
+      .then((data) => {
+        if (!isMounted) return;
+        setRecipe(data ?? null);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setError('Failed to load recipe.');
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
+      });
+
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [recipeId]);
 
   if (isLoading) {
     return <AppShell title="Recipe Details"><div className="planner-panel">Loading recipe...</div></AppShell>;
   }
 
+  if (error) {
+    return <AppShell title="Recipe Details"><div className="planner-panel empty-state" role="alert">{error}</div></AppShell>;
+  }
+
   if (!recipe) {
-    return <AppShell title="Recipe Details"><div className="planner-panel empty-state">Recipe not found.</div></AppShell>;
+    return (
+      <AppShell title="Recipe Details">
+        <div className="planner-panel empty-state">
+          <h2>Recipe not found.</h2>
+          <p>This recipe may have been deleted or the link may be incorrect.</p>
+          <Link className="secondary-link" to="/app/recipes">Back to recipes</Link>
+        </div>
+      </AppShell>
+    );
   }
 
   return (
     <AppShell
       title={recipe.recipeName}
       subtitle={recipe.description}
-      action={<Link className="planner-button" to={`/recipes/${recipe._id}/edit`}>Edit Recipe</Link>}
+      action={<Link className="planner-button" to={`/app/recipes/${recipe._id}/edit`}>Edit Recipe</Link>}
     >
       <section className="planner-grid-two">
         <div className="planner-panel">
@@ -60,7 +85,7 @@ function RecipeDetailsPage() {
               <li key={instruction}>{instruction}</li>
             ))}
           </ol>
-          <Link className="secondary-link" to="/planner">Assign to weekly planner</Link>
+          <Link className="secondary-link" to="/app/planner">Assign to weekly planner</Link>
         </div>
       </section>
     </AppShell>

@@ -1,4 +1,5 @@
-﻿export interface LoginPayload {
+// Mock service now. Replace these internals with Express fetch calls later while keeping the exported function names and response shapes.
+export interface LoginPayload {
   email: string;
   password: string;
 }

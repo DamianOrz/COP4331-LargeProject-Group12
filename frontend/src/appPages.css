@@ -1,4 +1,4 @@
-﻿.planner-app-shell {
+.planner-app-shell {
   min-height: 100vh;
   background: #f7f8f7;
   color: #18212b;
@@ -269,7 +269,8 @@
 }
 
 .recipe-form,
-.planner-assignment-form {
+.planner-assignment-form,
+.account-panel {
   display: grid;
   gap: 18px;
 }
@@ -277,7 +278,8 @@
 .recipe-form label,
 .recipe-form fieldset,
 .planner-assignment-form label,
-.filter-row label {
+.filter-row label,
+.account-panel label {
   display: grid;
   gap: 8px;
   text-align: left;
@@ -286,7 +288,8 @@
 .recipe-form label span,
 .recipe-form legend,
 .planner-assignment-form label span,
-.filter-row label span {
+.filter-row label span,
+.account-panel label span {
   color: #17212d;
   font-size: 14px;
   font-weight: 800;
@@ -295,10 +298,12 @@
 .recipe-form input,
 .recipe-form textarea,
 .recipe-form select,
+.planner-assignment-form input,
 .planner-assignment-form textarea,
 .planner-assignment-form select,
 .filter-row input,
-.filter-row select {
+.filter-row select,
+.account-panel input {
   width: 100%;
   min-height: 42px;
   padding: 10px 12px;
@@ -317,7 +322,8 @@
 }
 
 .recipe-form input[aria-invalid="true"],
-.recipe-form textarea[aria-invalid="true"] {
+.recipe-form textarea[aria-invalid="true"],
+.recipe-form select[aria-invalid="true"] {
   border-color: #c52835;
   box-shadow: 0 0 0 3px rgba(197, 40, 53, 0.1);
 }

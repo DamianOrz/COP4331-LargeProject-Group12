@@ -8,16 +8,28 @@ function RecipeListPage() {
   const [search, setSearch] = useState('');
   const [mealType, setMealType] = useState<MealType | 'all'>('all');
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
-    listRecipes({ search, mealType }).then((data) => {
-      if (!isMounted) return;
-      setRecipes(data);
-      setIsLoading(false);
-    });
+    setError('');
+
+    listRecipes({ search, mealType })
+      .then((data) => {
+        if (!isMounted) return;
+        setRecipes(data);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setError('Failed to load recipes.');
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
+      });
+
     return () => {
       isMounted = false;
     };
@@ -32,11 +44,13 @@ function RecipeListPage() {
     setMessage('Recipe deleted.');
   };
 
+  const hasFilters = Boolean(search.trim()) || mealType !== 'all';
+
   return (
     <AppShell
       title="Recipes"
       subtitle="Create, search, edit, and delete recipe ideas."
-      action={<Link className="planner-button" to="/recipes/new">Add Recipe</Link>}
+      action={<Link className="planner-button" to="/app/recipes/new">Add Recipe</Link>}
     >
       <section className="planner-panel">
         <div className="filter-row">
@@ -59,8 +73,10 @@ function RecipeListPage() {
 
       {isLoading ? (
         <div className="planner-panel">Loading recipes...</div>
+      ) : error ? (
+        <div className="planner-panel empty-state" role="alert">{error}</div>
       ) : recipes.length === 0 ? (
-        <div className="planner-panel empty-state">No recipes match your search.</div>
+        <div className="planner-panel empty-state">{hasFilters ? 'Search returned no recipes.' : 'No recipes yet.'}</div>
       ) : (
         <section className="recipe-list" aria-label="Recipe list">
           {recipes.map((recipe) => (
@@ -76,8 +92,8 @@ function RecipeListPage() {
                 </div>
               </div>
               <div className="card-actions">
-                <Link to={`/recipes/${recipe._id}`}>Details</Link>
-                <Link to={`/recipes/${recipe._id}/edit`}>Edit</Link>
+                <Link to={`/app/recipes/${recipe._id}`}>Details</Link>
+                <Link to={`/app/recipes/${recipe._id}/edit`}>Edit</Link>
                 <button type="button" onClick={() => handleDelete(recipe._id)}>Delete</button>
               </div>
             </article>
