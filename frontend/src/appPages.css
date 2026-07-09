@@ -388,9 +388,26 @@
 .recipe-card {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 18px;
   padding: 20px;
   text-align: left;
+}
+
+.recipe-card > div:first-child {
+  min-width: 0;
+}
+
+.card-actions {
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.card-actions a,
+.card-actions button {
+  min-width: 72px;
+  min-height: 40px;
+  padding: 0 14px;
 }
 
 .meal-pill {
