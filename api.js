@@ -63,7 +63,7 @@ exports.setApp = function ( app, client )
             ln = results[0].lastName;
 
             // Generate the secure token packet instead of passing raw strings
-            var ret = token.createToken(fn, ln, id);
+            var ret = token.createToken(fn, ln, id, login);
             res.status(200).json(ret);
         }
         else

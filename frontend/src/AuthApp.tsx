@@ -207,11 +207,19 @@ function LoginPage({ setPage }) {
 
     setMessage(null);
     setIsLoading(true);
-    try {
-      const result = await login({ email: values.email, password: values.password });
-      storeToken({ accessToken: result.token });
-      localStorage.setItem("user_data", JSON.stringify(result.user));
-      window.location.assign("/app");
+    try 
+    {
+      const result = await login({ login: values.email, password: values.password });
+
+      if (result.accessToken) 
+      {
+        storeToken({ accessToken: result.accessToken });
+        window.location.assign("/app");
+      } 
+      else 
+      {
+        throw new Error(result.error || "Login failed.");
+      }
     } catch (error) {
       setMessage({ type: "error", text: "Invalid email or password." });
     } finally {
@@ -832,5 +840,3 @@ function MealPlannerAuthApp() {
 }
 
 export default MealPlannerAuthApp;
-
-
