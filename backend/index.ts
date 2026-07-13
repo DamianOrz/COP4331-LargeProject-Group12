@@ -17,7 +17,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const url = `mongodb+srv://root:6PD7FWmODYEdqrJe@meal.mzrlgyk.mongodb.net/?appName=Meal`;
+const url = process.env.MONGODB_URI;
 
 app.use(`/api/recipes`, recipeRoutes);
 app.use(`/api/mealplans`, mealplanRoutes);
