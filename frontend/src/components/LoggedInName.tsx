@@ -1,8 +1,6 @@
 function LoggedInName()
 {
 
-    var user={}
-
     function doLogout(event:any) : void
     {
 	    event.preventDefault();

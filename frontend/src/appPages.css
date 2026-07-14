@@ -352,6 +352,10 @@
   margin-bottom: 10px;
 }
 
+.ingredient-row-simple {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

@@ -1,4 +1,5 @@
-﻿﻿import type { AuthUser } from './api/authApi';
+import { jwtDecode } from 'jwt-decode';
+import type { AuthUser } from './api/authApi';
 import { retrieveToken } from './tokenStorage';
 
 export interface SessionState {
@@ -7,56 +8,53 @@ export interface SessionState {
   user: AuthUser | null;
 }
 
+interface JwtPayload {
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  exp?: number;
+}
+
 const tokenStorageKey = 'token_data';
+const legacyUserStorageKey = 'user_data';
 
-function decodeJwtPayload(token: string): AuthUser | null {
-  const [, payload] = token.split('.');
-  if (!payload) return null;
-
+function decodeJwtPayload(token: string): JwtPayload | null {
   try {
-    // This is a simplified base64-url decoder. A library like `jwt-decode` would be more robust.
-    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decoded = JSON.parse(window.atob(normalizedPayload));
-    return decoded as AuthUser;
+    return jwtDecode<JwtPayload>(token);
   } catch {
     return null;
   }
 }
 
-function isJwtExpired(token: string): boolean {
-  const [, payload] = token.split('.');
-  if (!payload) return false;
-
-  try {
-    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decoded = JSON.parse(window.atob(normalizedPayload));
-    return typeof decoded.exp === 'number' && decoded.exp * 1000 <= Date.now();
-  } catch {
-    return false;
-  }
-}
-
 export function getSessionState(): SessionState {
   const token = retrieveToken();
+  if (!token) return { isAuthenticated: false, isExpired: false, user: null };
 
-  if (!token) {
+  const payload = decodeJwtPayload(token);
+  if (!payload?.userId || !payload.email) {
+    clearSession();
     return { isAuthenticated: false, isExpired: false, user: null };
   }
 
-  if (isJwtExpired(token)) {
+  if (typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now()) {
     clearSession();
     return { isAuthenticated: false, isExpired: true, user: null };
   }
 
-  const user = decodeJwtPayload(token);
-  if (!user) {
-    clearSession();
-    return { isAuthenticated: false, isExpired: false, user: null };
-  }
-
-  return { isAuthenticated: true, isExpired: false, user };
+  return {
+    isAuthenticated: true,
+    isExpired: false,
+    user: {
+      _id: String(payload.userId),
+      firstName: payload.firstName ?? '',
+      lastName: payload.lastName ?? '',
+      email: payload.email
+    }
+  };
 }
 
 export function clearSession(): void {
   localStorage.removeItem(tokenStorageKey);
+  localStorage.removeItem(legacyUserStorageKey);
 }

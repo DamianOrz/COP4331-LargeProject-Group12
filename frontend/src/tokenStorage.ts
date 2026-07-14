@@ -1,14 +1,10 @@
-export const storeToken = (tokenAsObject: any): void => {
-    console.log("storeToken called with:", tokenAsObject);
-    console.log("saving:", tokenAsObject.accessToken);
-
-    localStorage.setItem("token_data", tokenAsObject.accessToken);
-
-    console.log("localStorage now:", localStorage.getItem("token_data"));
+interface TokenResponse {
+  accessToken: string;
 }
 
-export const retrieveToken = (): string | null => {
-    const token = localStorage.getItem("token_data");
-    console.log("retrieveToken:", token);
-    return token;
-}
+export const storeToken = (token: TokenResponse | string): void => {
+  const accessToken = typeof token === 'string' ? token : token.accessToken;
+  localStorage.setItem('token_data', accessToken);
+};
+
+export const retrieveToken = (): string | null => localStorage.getItem('token_data');

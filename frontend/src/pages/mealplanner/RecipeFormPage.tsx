@@ -8,7 +8,7 @@ interface RouteParams {
   recipeId?: string;
 }
 
-const emptyIngredient: Ingredient = { name: '', quantity: 1, unit: '' };
+const emptyIngredient: Ingredient = '';
 const validMealTypes: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
 function RecipeFormPage() {
@@ -18,7 +18,7 @@ function RecipeFormPage() {
   const [form, setForm] = useState<RecipeInput>({
     recipeName: '',
     description: '',
-    ingredients: [{ ...emptyIngredient }],
+    ingredients: [emptyIngredient],
     instructions: [''],
     mealType: 'dinner',
     prepTime: 30,
@@ -73,19 +73,19 @@ function RecipeFormPage() {
     setErrors((current) => ({ ...current, [field]: '' }));
   };
 
-  const updateIngredient = (index: number, field: keyof Ingredient, value: string | number) => {
+  const updateIngredient = (index: number, value: string) => {
     const nextIngredients = form.ingredients.map((ingredient, ingredientIndex) =>
-      ingredientIndex === index ? { ...ingredient, [field]: value } : ingredient
+      ingredientIndex === index ? value : ingredient
     );
     updateField('ingredients', nextIngredients);
-    setErrors((current) => ({ ...current, [`ingredient-${index}-${field}`]: '', ingredients: '' }));
+    setErrors((current) => ({ ...current, [`ingredient-${index}`]: '', ingredients: '' }));
   };
 
-  const addIngredient = () => updateField('ingredients', [...form.ingredients, { ...emptyIngredient }]);
+  const addIngredient = () => updateField('ingredients', [...form.ingredients, emptyIngredient]);
 
   const removeIngredient = (index: number) => {
     const nextIngredients = form.ingredients.filter((_, ingredientIndex) => ingredientIndex !== index);
-    updateField('ingredients', nextIngredients.length > 0 ? nextIngredients : [{ ...emptyIngredient }]);
+    updateField('ingredients', nextIngredients.length > 0 ? nextIngredients : [emptyIngredient]);
   };
 
   const validate = () => {
@@ -93,13 +93,10 @@ function RecipeFormPage() {
     if (!form.recipeName.trim()) nextErrors.recipeName = 'Recipe name is required.';
     if (!form.description.trim()) nextErrors.description = 'Description is required.';
     if (!validMealTypes.includes(form.mealType)) nextErrors.mealType = 'Choose a valid meal type.';
-    if (!form.ingredients.some((ingredient) => ingredient.name.trim())) nextErrors.ingredients = 'At least one ingredient is required.';
+    if (!form.ingredients.some((ingredient) => ingredient.trim())) nextErrors.ingredients = 'At least one ingredient is required.';
 
     form.ingredients.forEach((ingredient, index) => {
-      if (!ingredient.name.trim()) nextErrors[`ingredient-${index}-name`] = 'Ingredient name is required.';
-      if (!Number.isFinite(ingredient.quantity) || ingredient.quantity <= 0) {
-        nextErrors[`ingredient-${index}-quantity`] = 'Quantity must be positive.';
-      }
+      if (!ingredient.trim()) nextErrors[`ingredient-${index}`] = 'Ingredient is required.';
     });
 
     if (!form.instructions.some((instruction) => instruction.trim())) nextErrors.instructions = 'At least one instruction is required.';
@@ -121,7 +118,7 @@ function RecipeFormPage() {
     setMessage(isEditing ? 'Saving recipe...' : 'Creating recipe...');
     const payload: RecipeInput = {
       ...form,
-      ingredients: form.ingredients.filter((ingredient) => ingredient.name.trim()),
+      ingredients: form.ingredients.map((ingredient) => ingredient.trim()).filter(Boolean),
       instructions: form.instructions.map((instruction) => instruction.trim()).filter(Boolean)
     };
 
@@ -185,20 +182,11 @@ function RecipeFormPage() {
         <fieldset>
           <legend>Ingredients</legend>
           {form.ingredients.map((ingredient, index) => (
-            <div className="ingredient-row" key={`ingredient-${index}`}>
+            <div className="ingredient-row ingredient-row-simple" key={`ingredient-${index}`}>
               <label>
-                <span>Ingredient Name</span>
-                <input value={ingredient.name} onChange={(event) => updateIngredient(index, 'name', event.target.value)} aria-invalid={Boolean(errors[`ingredient-${index}-name`])} />
-                {errors[`ingredient-${index}-name`] && <small>{errors[`ingredient-${index}-name`]}</small>}
-              </label>
-              <label>
-                <span>Quantity</span>
-                <input type="number" min="0.01" step="0.25" value={ingredient.quantity} onChange={(event) => updateIngredient(index, 'quantity', Number(event.target.value))} aria-invalid={Boolean(errors[`ingredient-${index}-quantity`])} />
-                {errors[`ingredient-${index}-quantity`] && <small>{errors[`ingredient-${index}-quantity`]}</small>}
-              </label>
-              <label>
-                <span>Unit</span>
-                <input value={ingredient.unit} onChange={(event) => updateIngredient(index, 'unit', event.target.value)} />
+                <span>Ingredient</span>
+                <input value={ingredient} onChange={(event) => updateIngredient(index, event.target.value)} placeholder="Example: 1 cup brown rice" aria-invalid={Boolean(errors[`ingredient-${index}`])} />
+                {errors[`ingredient-${index}`] && <small>{errors[`ingredient-${index}`]}</small>}
               </label>
               <button type="button" className="secondary-button" onClick={() => removeIngredient(index)}>Remove</button>
             </div>

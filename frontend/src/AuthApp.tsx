@@ -1,6 +1,6 @@
 ﻿// @ts-nocheck
 import React, { useState } from "react";
-import { login } from "./api/authApi";
+import { login, register as registerAccount } from "./api/authApi";
 import { storeToken } from "./tokenStorage";
 import "./styles.css";
 
@@ -207,20 +207,11 @@ function LoginPage({ setPage }) {
 
     setMessage(null);
     setIsLoading(true);
-    try 
-    {
-      const result = await login({ login: values.email, password: values.password });
-
-      if (result.accessToken) 
-      {
-        storeToken({ accessToken: result.accessToken });
-        window.location.assign("/app");
-      } 
-      else 
-      {
-        throw new Error(result.error || "Login failed.");
-      }
-    } catch (error) {
+    try {
+      const result = await login({ email: values.email, password: values.password });
+      storeToken({ accessToken: result.token });
+      window.location.assign("/app");
+    } catch {
       setMessage({ type: "error", text: "Invalid email or password." });
     } finally {
       setIsLoading(false);
@@ -644,7 +635,7 @@ function RegisterPage({ setPage }) {
     setErrors({ ...errors, [field]: "" });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = {};
 
@@ -665,9 +656,20 @@ function RegisterPage({ setPage }) {
     }
 
     setMessage(null);
-    waitForFeedback(setIsLoading, () => {
-      setMessage({ type: "success", text: "Account created. Please check your email to verify your account." });
-    });
+    setIsLoading(true);
+    try {
+      const result = await registerAccount({
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        email: values.email.trim(),
+        password: values.password
+      });
+      setMessage({ type: "success", text: result.message });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Unable to create account." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

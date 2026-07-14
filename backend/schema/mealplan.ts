@@ -9,7 +9,7 @@ export interface IPlannedMeal {
 }
 
 export interface IMealPlan extends Document {
-    userId: mongoose.Types.ObjectId;
+    userId: string;
     weekStartDate: Date;
     plannedMeals: IPlannedMeal[];
     createdAt: Date;
@@ -24,7 +24,7 @@ const PlannedMealSchema: Schema = new Schema({
 }, { _id: false });
 
 const MealPlanSchema: Schema = new Schema({
-    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    userId: { type: String, required: true, ref: 'users' },
     weekStartDate: { type: Date, required: true },
     plannedMeals: { type: [PlannedMealSchema], default: [] },
     createdAt: { type: Date, default: Date.now }

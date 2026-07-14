@@ -73,7 +73,7 @@ function RecipeDetailsPage() {
           <h2>Ingredients</h2>
           <ul className="detail-list">
             {recipe.ingredients.map((ingredient) => (
-              <li key={`${ingredient.name}-${ingredient.unit}`}>{ingredient.quantity} {ingredient.unit} {ingredient.name}</li>
+              <li key={ingredient}>{ingredient}</li>
             ))}
           </ul>
         </div>

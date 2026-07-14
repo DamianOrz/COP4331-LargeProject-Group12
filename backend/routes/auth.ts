@@ -14,9 +14,12 @@ r.post(`/login`, async (req: Request, res: Response) => {
         return res.status(401).json({ error: `Invalid Credentials` })
     }
 
-    let ret = createToken(user.firstName, user.lastName, user._id, user.email);
+    const accessToken = createToken(user.firstName, user.lastName, user._id, user.email);
+    if(!accessToken) {
+        return res.status(500).json({ error: `Unable to create access token` });
+    }
 
-    res.json(ret);
+    res.json({ accessToken });
 });
 
 r.post(`/register`, async (req: Request, res: Response) => {
@@ -40,7 +43,7 @@ r.post(`/register`, async (req: Request, res: Response) => {
     }
 
     await users.insertOne(newUser);
-    let ret = createToken(firstName, lastName, id, email);
+    res.status(201).json({ message: `Account created successfully` });
 });
 
 export default r;

@@ -45,7 +45,7 @@ Description [........................]
 Meal Type [Dinner]  Prep Time [30]  Servings [2]
 
 Ingredients
-[Ingredient] [Qty] [Unit] [Remove]
+[Ingredient, for example: 1 cup brown rice] [Remove]
 [Add Ingredient]
 
 Instructions

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IRecipe extends Document {
-    userId: mongoose.Types.ObjectId;
+    userId: string;
     recipeName: string;
     description: string;
     ingredients: string[];
@@ -13,7 +13,7 @@ export interface IRecipe extends Document {
 }
 
 const RecipeSchema: Schema = new Schema({
-    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    userId: { type: String, required: true, ref: 'users' },
     recipeName: { type: String, required: true },
     description: { type: String, default: "" },
     ingredients: { type: [String], default: [] },

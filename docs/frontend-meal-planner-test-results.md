@@ -5,6 +5,8 @@ Test Environment: Built Vite React app tested in headless Microsoft Edge
 
 ## Results
 
+These results are the pre-API mock-prototype acceptance baseline.
+
 /register with empty fields: PASS
 /register with mismatched passwords: PASS
 /register with invalid email and weak password: PASS
@@ -26,5 +28,6 @@ Mobile 390x844 layout check: PASS
 ## Notes
 
 - No horizontal overflow detected on mobile.
-- Recipe and planner flows use frontend mock services only.
-- Backend API, MongoDB, JWT, deployment, and mobile app tests are still separate project requirements.
+- Recipe and planner flows used frontend mock services during this recorded test run.
+- The frontend is now connected to the Express API; API-backed acceptance, MongoDB integration, and JWT integration tests still need to be recorded in the team's configured Bun/Mongo environment.
+- Deployment and mobile app tests remain separate project requirements.
