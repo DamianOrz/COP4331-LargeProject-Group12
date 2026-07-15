@@ -17,10 +17,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
-          cache-dependency-path: |
-            package-lock.json
-            frontend/package-lock.json
+          cache: 'npm' # Cache frontend dependencies
+          cache-dependency-path: frontend/package-lock.json
 
       # Install and build frontend
       - name: Install frontend dependencies
@@ -29,6 +27,9 @@ jobs:
       - name: Build frontend
         working-directory: ./frontend
         run: npm run build
+        env:
+          # Set the production API URL for the Vite build
+          VITE_API_BASE_URL: /api
 
       # Deploy frontend to server
       - name: Deploy frontend to server
@@ -51,8 +52,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "server.js,api.js,createJWT.js,package.json,package-lock.json"
-          target: "/var/cardsServer"
+          source: "backend/."
+          target: "/var/www/backend"
           overwrite: true
 
       # Install backend dependencies and restart PM2
@@ -64,15 +65,21 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
+            # Install bun if not present
+            if ! command -v bun &> /dev/null
+            then
+                echo "BUN NOT FOUND, INSTALLING..."
+                curl -fsSL https://bun.sh/install | bash
+            fi
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
             # Navigate to backend directory
-            cd /var/cardsServer
+            cd /var/www/backend
             # Install dependencies
-            npm ci --production
+            bun install --production
             # Ensure PM2 is installed globally
             npm list -g pm2 || npm install -g pm2
             # Reload the application with PM2 (zero-downtime reload)
-            pm2 reload express-server --update-env || pm2 start server.js --name "express-server"
+            pm2 reload bun-server --update-env || pm2 start index.ts --name "bun-server" --interpreter=bun
             # Save PM2 process list
             pm2 save
-            # Optional: Clear nginx cache if needed
-            nginx -s reload
