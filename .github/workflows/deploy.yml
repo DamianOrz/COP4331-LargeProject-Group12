@@ -46,13 +46,14 @@ jobs:
 
       # Deploy backend files to server
       - name: Deploy backend files
+        working-directory: ./backend
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "backend/."
+          source: "."
           target: "/var/www/backend"
           overwrite: true
 
@@ -79,7 +80,7 @@ jobs:
             bun install --production
             # Ensure PM2 is installed globally
             npm list -g pm2 || npm install -g pm2
-            # Reload the application with PM2 (zero-downtime reload)
-            pm2 reload bun-server --update-env || pm2 start index.ts --name "bun-server" --interpreter=bun
+            # Restart the application with PM2 to apply changes
+            pm2 restart bun-server --update-env || pm2 start index.ts --name "bun-server" --interpreter=bun
             # Save PM2 process list
             pm2 save
