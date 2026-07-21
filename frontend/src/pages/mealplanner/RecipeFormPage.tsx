@@ -26,6 +26,7 @@ function RecipeFormPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [loadError, setLoadError] = useState('');
   const [isLoading, setIsLoading] = useState(Boolean(recipeId));
   const [isSaving, setIsSaving] = useState(false);
@@ -109,6 +110,7 @@ function RecipeFormPage() {
     event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
+    setSubmitError('');
     if (Object.keys(nextErrors).length > 0) {
       setMessage('Please fix the highlighted fields.');
       return;
@@ -122,14 +124,20 @@ function RecipeFormPage() {
       instructions: form.instructions.map((instruction) => instruction.trim()).filter(Boolean)
     };
 
-    if (isEditing && recipeId) {
-      await updateRecipe(recipeId, payload);
-    } else {
-      await createRecipe(payload);
-    }
+    try {
+      if (isEditing && recipeId) {
+        await updateRecipe(recipeId, payload);
+      } else {
+        await createRecipe(payload);
+      }
 
-    setIsSaving(false);
-    history.push('/app/recipes');
+      history.push('/app/recipes');
+    } catch {
+      setMessage('');
+      setSubmitError(isEditing ? 'Failed to update recipe.' : 'Failed to create recipe.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {
@@ -144,6 +152,7 @@ function RecipeFormPage() {
     <AppShell title={isEditing ? 'Edit Recipe' : 'Add Recipe'} subtitle="Save recipe details for future meal planning.">
       <form className="planner-panel recipe-form" onSubmit={handleSubmit} noValidate>
         {message && <div className={Object.keys(errors).length > 0 ? 'planner-message error' : 'planner-message'} role="status">{message}</div>}
+        {submitError && <div className="planner-message error" role="alert">{submitError}</div>}
 
         <label>
           <span>Recipe Name</span>

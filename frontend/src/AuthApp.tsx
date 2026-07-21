@@ -1,6 +1,13 @@
 ﻿// @ts-nocheck
 import React, { useState } from "react";
-import { login, register as registerAccount } from "./api/authApi";
+import {
+  login,
+  register as registerAccount,
+  requestPasswordReset,
+  resendVerificationEmail,
+  resetPassword,
+  verifyEmail
+} from "./api/authApi";
 import { storeToken } from "./tokenStorage";
 import "./styles.css";
 
@@ -24,16 +31,12 @@ const getPageFromPath = (path) => {
 
 const navTo = (path, setPage) => {
   window.history.pushState({}, "", path);
-  setPage(getPageFromPath(path));
+  const url = new URL(path, window.location.origin);
+  setPage(getPageFromPath(url.pathname));
 };
 
-const waitForFeedback = (setLoading, onDone) => {
-  setLoading(true);
-  window.setTimeout(() => {
-    setLoading(false);
-    onDone();
-  }, 700);
-};
+const getSearchParam = (name) => new URLSearchParams(window.location.search).get(name)?.trim() || "";
+const getVerificationEmail = () => getSearchParam("email") || sessionStorage.getItem("pending_verification_email") || "";
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 const isWeakPassword = (password) => password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password);
@@ -211,8 +214,8 @@ function LoginPage({ setPage }) {
       const result = await login({ email: values.email, password: values.password });
       storeToken({ accessToken: result.token });
       window.location.assign("/app");
-    } catch {
-      setMessage({ type: "error", text: "Invalid email or password." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Invalid email or password." });
     } finally {
       setIsLoading(false);
     }
@@ -320,7 +323,7 @@ function ForgotPasswordPage({ setPage }) {
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = {};
 
@@ -335,9 +338,15 @@ function ForgotPasswordPage({ setPage }) {
     }
 
     setMessage(null);
-    waitForFeedback(setIsLoading, () => {
-      setMessage({ type: "success", text: "Password reset link sent." });
-    });
+    setIsLoading(true);
+    try {
+      const result = await requestPasswordReset(email.trim());
+      setMessage({ type: "success", text: result.message || "Password reset link sent." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Unable to send reset link." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -384,7 +393,9 @@ function ResetPasswordPage({ setPage }) {
     setErrors({ ...errors, [field]: "" });
   };
 
-  const handleSubmit = (event) => {
+  const token = getSearchParam("token");
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = {};
 
@@ -399,10 +410,21 @@ function ResetPasswordPage({ setPage }) {
       return;
     }
 
+    if (!token) {
+      setMessage({ type: "error", text: "Reset link is invalid or missing." });
+      return;
+    }
+
     setMessage(null);
-    waitForFeedback(setIsLoading, () => {
-      setMessage({ type: "success", text: "Your password has been reset." });
-    });
+    setIsLoading(true);
+    try {
+      const result = await resetPassword(token, values.password);
+      setMessage({ type: "success", text: result.message || "Your password has been reset." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Unable to reset password." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -490,19 +512,31 @@ function CircleStatusIcon({ type }) {
 function CheckEmailPage({ setPage }) {
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const email = getVerificationEmail();
 
-  const handleResend = () => {
+  const handleResend = async () => {
+    if (!email) {
+      setMessage({ type: "error", text: "Email address is missing. Please register again." });
+      return;
+    }
+
     setMessage(null);
-    waitForFeedback(setIsLoading, () => {
-      setMessage({ type: "success", text: "Verification email sent." });
-    });
+    setIsLoading(true);
+    try {
+      const result = await resendVerificationEmail(email);
+      setMessage({ type: "success", text: result.message || "Verification email sent." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Unable to resend verification email." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <StatusShell>
       <EnvelopeCheckIcon />
       <h1>Check your email!</h1>
-      <p>We've sent a verification link to<br /><strong>your.email@example.com</strong></p>
+      <p>We've sent a verification link to<br /><strong>{email || "your email address"}</strong></p>
       <p>Please check your inbox and click the link<br />to verify your account.</p>
       <MessageArea message={message} />
       <button className="primary-button status-button" type="button" onClick={handleResend} disabled={isLoading}>
@@ -520,11 +554,32 @@ function CheckEmailPage({ setPage }) {
 
 function VerifySuccessPage({ setPage }) {
   const [isLoading, setIsLoading] = useState(true);
+  const token = getSearchParam("token");
+  const email = getVerificationEmail();
 
   React.useEffect(() => {
-    const timer = window.setTimeout(() => setIsLoading(false), 700);
-    return () => window.clearTimeout(timer);
-  }, []);
+    let isMounted = true;
+
+    if (!token) {
+      navTo(`/verify-email-invalid${email ? `?email=${encodeURIComponent(email)}` : ""}`, setPage);
+      return undefined;
+    }
+
+    verifyEmail(token)
+      .then(() => {
+        if (!isMounted) return;
+        sessionStorage.removeItem("pending_verification_email");
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        navTo(`/verify-email-invalid${email ? `?email=${encodeURIComponent(email)}` : ""}`, setPage);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [email, setPage, token]);
 
   return (
     <StatusShell>
@@ -545,39 +600,38 @@ function VerifySuccessPage({ setPage }) {
 }
 
 function VerifyInvalidPage({ setPage }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState({ type: "error", text: "Verification link expired." });
   const [isResending, setIsResending] = useState(false);
+  const email = getVerificationEmail();
 
-  React.useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setIsLoading(false);
-      setMessage({ type: "error", text: "Verification link expired." });
-    }, 700);
-    return () => window.clearTimeout(timer);
-  }, []);
+  const handleResend = async () => {
+    if (!email) {
+      setMessage({ type: "error", text: "Email address is missing. Please register again." });
+      return;
+    }
 
-  const handleResend = () => {
     setMessage(null);
-    waitForFeedback(setIsResending, () => {
-      setMessage({ type: "success", text: "Verification email sent." });
-    });
+    setIsResending(true);
+    try {
+      const result = await resendVerificationEmail(email);
+      setMessage({ type: "success", text: result.message || "Verification email sent." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Unable to resend verification email." });
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
     <StatusShell>
       <CircleStatusIcon type="error" />
-      <h1>{isLoading ? "Verifying email..." : "Invalid or Expired Link"}</h1>
+      <h1>Invalid or Expired Link</h1>
       <p>
-        {isLoading ? (
-          <>Please wait while we verify your link.</>
-        ) : (
-          <>The verification link is invalid or has expired.<br />Please request a new verification link.</>
-        )}
+        The verification link is invalid or has expired.<br />Please request a new verification link.
       </p>
       <MessageArea message={message} />
-      <button className="primary-button status-button" type="button" onClick={handleResend} disabled={isLoading || isResending}>
-        {isLoading ? "Verifying email..." : isResending ? "Sending..." : "Resend Verification Email"}
+      <button className="primary-button status-button" type="button" onClick={handleResend} disabled={isResending}>
+        {isResending ? "Sending..." : "Resend Verification Email"}
       </button>
       <a className="back-link" href="/login" onClick={(event) => {
         event.preventDefault();
@@ -664,7 +718,10 @@ function RegisterPage({ setPage }) {
         email: values.email.trim(),
         password: values.password
       });
+      const email = values.email.trim();
+      sessionStorage.setItem("pending_verification_email", email);
       setMessage({ type: "success", text: result.message });
+      navTo(`/check-email?email=${encodeURIComponent(email)}`, setPage);
     } catch (error) {
       setMessage({ type: "error", text: error instanceof Error ? error.message : "Unable to create account." });
     } finally {

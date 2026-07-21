@@ -44,4 +44,12 @@ describe('auth form validation', () => {
     expect(screen.getByText('Email is required.')).toBeVisible();
     expect(screen.getByText('Password is required.')).toBeVisible();
   });
+
+  it('shows the registered email on the check-email page', () => {
+    window.history.replaceState({}, '', '/check-email?email=front@example.com');
+    render(<MealPlannerAuthApp />);
+
+    expect(screen.getByText('front@example.com')).toBeVisible();
+    expect(screen.queryByText('your.email@example.com')).not.toBeInTheDocument();
+  });
 });

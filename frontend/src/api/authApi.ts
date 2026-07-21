@@ -53,19 +53,18 @@ export async function register(payload: RegisterPayload): Promise<{ message: str
   return postApi<{ message: string }>('register', payload, false);
 }
 
-// These screens remain UI-only until matching backend routes are added.
-export async function verifyEmail(_token: string): Promise<{ message: string }> {
-  return { message: 'Your email has been successfully verified.' };
+export async function verifyEmail(token: string): Promise<{ message: string }> {
+  return postApi<{ message: string }>('verify-email', { token }, false);
 }
 
-export async function resendVerificationEmail(_email: string): Promise<{ message: string }> {
-  return { message: 'Verification email sent.' };
+export async function resendVerificationEmail(email: string): Promise<{ message: string }> {
+  return postApi<{ message: string }>('resend-verification', { email }, false);
 }
 
-export async function requestPasswordReset(_email: string): Promise<{ message: string }> {
-  return { message: 'Password reset link sent.' };
+export async function requestPasswordReset(email: string): Promise<{ message: string }> {
+  return postApi<{ message: string }>('forgot-password', { email }, false);
 }
 
-export async function resetPassword(_token: string, _password: string): Promise<{ message: string }> {
-  return { message: 'Your password has been reset.' };
+export async function resetPassword(token: string, password: string): Promise<{ message: string }> {
+  return postApi<{ message: string }>('reset-password', { token, password }, false);
 }

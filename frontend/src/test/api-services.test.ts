@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { login } from '../api/authApi';
+import { login, requestPasswordReset, resendVerificationEmail, resetPassword, verifyEmail } from '../api/authApi';
 import { getWeeklyMealPlan } from '../api/mealPlanApi';
 import { listRecipes } from '../api/recipeApi';
 
@@ -44,6 +44,26 @@ describe('frontend API services', () => {
         body: JSON.stringify({ login: 'front@example.com', password: 'Password123' })
       })
     );
+  });
+
+  it('uses the real email verification and password reset endpoints', async () => {
+    fetchMock.mockResolvedValue(response({ message: 'Success' }));
+
+    await verifyEmail('verification-token');
+    await resendVerificationEmail('front@example.com');
+    await requestPasswordReset('front@example.com');
+    await resetPassword('reset-token', 'Password123');
+
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
+      'http://localhost:5000/api/verify-email',
+      'http://localhost:5000/api/resend-verification',
+      'http://localhost:5000/api/forgot-password',
+      'http://localhost:5000/api/reset-password'
+    ]);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body as string)).toEqual({ token: 'verification-token' });
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body as string)).toEqual({ email: 'front@example.com' });
+    expect(JSON.parse(fetchMock.mock.calls[2][1].body as string)).toEqual({ email: 'front@example.com' });
+    expect(JSON.parse(fetchMock.mock.calls[3][1].body as string)).toEqual({ token: 'reset-token', password: 'Password123' });
   });
 
   it('sends JWT, user, search, and meal-type fields when listing recipes', async () => {

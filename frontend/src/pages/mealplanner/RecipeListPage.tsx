@@ -9,7 +9,9 @@ function RecipeListPage() {
   const [mealType, setMealType] = useState<MealType | 'all'>('all');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [actionError, setActionError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingRecipeId, setDeletingRecipeId] = useState('');
 
   useEffect(() => {
     let isMounted = true;
@@ -38,10 +40,20 @@ function RecipeListPage() {
   const handleDelete = async (recipeId: string) => {
     const confirmed = window.confirm('Delete this recipe?');
     if (!confirmed) return;
+    setActionError('');
     setMessage('Deleting recipe...');
-    await deleteRecipe(recipeId);
-    setRecipes(await listRecipes({ search, mealType }));
-    setMessage('Recipe deleted.');
+    setDeletingRecipeId(recipeId);
+
+    try {
+      await deleteRecipe(recipeId);
+      setRecipes(await listRecipes({ search, mealType }));
+      setMessage('Recipe deleted.');
+    } catch {
+      setMessage('');
+      setActionError('Failed to delete recipe.');
+    } finally {
+      setDeletingRecipeId('');
+    }
   };
 
   const hasFilters = Boolean(search.trim()) || mealType !== 'all';
@@ -69,6 +81,7 @@ function RecipeListPage() {
           </label>
         </div>
         {message && <div className="planner-message" role="status">{message}</div>}
+        {actionError && <div className="planner-message error" role="alert">{actionError}</div>}
       </section>
 
       {isLoading ? (
@@ -94,7 +107,9 @@ function RecipeListPage() {
               <div className="card-actions">
                 <Link to={`/app/recipes/${recipe._id}`}>Details</Link>
                 <Link to={`/app/recipes/${recipe._id}/edit`}>Edit</Link>
-                <button type="button" onClick={() => handleDelete(recipe._id)}>Delete</button>
+                <button type="button" onClick={() => handleDelete(recipe._id)} disabled={deletingRecipeId === recipe._id}>
+                  {deletingRecipeId === recipe._id ? 'Deleting...' : 'Delete'}
+                </button>
               </div>
             </article>
           ))}
