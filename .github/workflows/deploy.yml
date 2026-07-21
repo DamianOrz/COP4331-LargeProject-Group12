@@ -68,6 +68,9 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
+            # Install server dependencies required for bun
+            apt-get update
+            apt-get install -y unzip
             # Install bun if not present
             if ! command -v bun &> /dev/null
             then
