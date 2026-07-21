@@ -1,3 +1,4 @@
+import './patch'; // Apply Bun compatibility patch first
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
