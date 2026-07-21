@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from 'express';
-import { requireAuth } from '../middleware/auth.ts';
+import { requireAuth } from '../middleware/auth';
 import Card from '../schema/card';
 
 const router = Router();
