@@ -90,6 +90,6 @@ jobs:
             # Ensure PM2 is installed globally
             npm list -g pm2 || npm install -g pm2
             # Restart the application with PM2 to apply changes
-            pm2 restart bun-server --update-env || pm2 start index.ts --name "bun-server" --interpreter=bun
+            pm2 restart bun-server --update-env || pm2 start index.ts --name "bun-server" --interpreter=$HOME/.bun/bin/bun
             # Save PM2 process list
             pm2 save
