@@ -19,7 +19,8 @@ r.post(`/login`, async (req: Request, res: Response) => {
         return res.status(500).json({ error: `Unable to create access token` });
     }
 
-    res.json({ accessToken });
+    // Returning user info alongside the token
+    res.json({ accessToken, userId: user._id.toString(), firstName: user.firstName });
 });
 
 r.post(`/register`, async (req: Request, res: Response) => {
@@ -30,19 +31,17 @@ r.post(`/register`, async (req: Request, res: Response) => {
         return res.status(403).json({ error: `Account already exists` });
     }
 
-    let id = randomUUIDv7()
-
+    // Mongoose handles _id and timestamps automatically.
     const newUser = {
-        _id: id,
         firstName,
         lastName,
         email,
         passwordHash: password,
         isEmailVerified: false,
-        createdAt: new Date(),
     }
-
-    await users.insertOne(newUser);
+    // await users.insertOne(newUser); // REMOVED
+    // Use the Mongoose .create() method to correctly save the new user.
+    await users.create(newUser);
     res.status(201).json({ message: `Account created successfully` });
 });
 
