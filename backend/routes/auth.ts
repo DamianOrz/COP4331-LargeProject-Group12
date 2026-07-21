@@ -6,7 +6,10 @@ import { randomUUIDv7 } from 'bun';
 const r = Router();
 
 r.post(`/login`, async (req: Request, res: Response) => {
-    const { login, password } = req.body;
+    let { login, password } = req.body;
+    
+    login = (login || '').trim().toLowerCase();
+    password = (password || '').trim();
 
     const user = await users.findOne({ email: login, passwordHash: password });
 
@@ -14,7 +17,10 @@ r.post(`/login`, async (req: Request, res: Response) => {
         return res.status(401).json({ error: `Invalid Credentials` })
     }
 
-    const accessToken = createToken(user.firstName, user.lastName, user._id, user.email);
+    // Ensure the user ID is a string
+    const userId = user._id.toString();
+    const accessToken = createToken(user.firstName, user.lastName, userId, user.email);
+
     if(!accessToken) {
         return res.status(500).json({ error: `Unable to create access token` });
     }
@@ -24,18 +30,24 @@ r.post(`/login`, async (req: Request, res: Response) => {
 });
 
 r.post(`/register`, async (req: Request, res: Response) => {
-    const { firstName, lastName, email, password } = req.body;
+    let { firstName, lastName, email, password } = req.body;
 
-    const exists = await users.findOne({ email });
+    // Sanitize and normalize input
+    email = (email || '').trim().toLowerCase();
+    password = (password || '').trim();
+    firstName = (firstName || '').trim();
+    lastName = (lastName || '').trim();
+
+    const exists = await users.findOne({ email: email });
     if(exists) {
         return res.status(403).json({ error: `Account already exists` });
     }
 
     // Mongoose handles _id and timestamps automatically.
     const newUser = {
-        firstName,
-        lastName,
-        email,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
         passwordHash: password,
         isEmailVerified: false,
     }
