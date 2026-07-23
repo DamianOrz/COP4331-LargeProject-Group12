@@ -10,7 +10,15 @@ function getFrontendUrl(): string {
     return (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+function getResend() {
+    const apiKey = process.env.RESEND_API_KEY;
+
+    if (!apiKey) {
+        throw new Error("RESEND_API_KEY is not configured.");
+    }
+
+    return new Resend(apiKey);
+}
 
 
 
@@ -30,7 +38,7 @@ export async function sendVerificationEmail({ to, firstName, token }: EmailToken
 
     const safeFirstName = escapeHtml(firstName);
 
-    await resend.emails.send({
+    await getResend().emails.send({
         from: process.env.EMAIL_FROM!,
         to,
         subject: "Verify your Meal Planner email",
@@ -48,7 +56,7 @@ export async function sendPasswordResetEmail({ to, firstName, token }: EmailToke
 
     const safeFirstName = escapeHtml(firstName);
 
-    await resend.emails.send({
+    await getResend().emails.send({
         from: process.env.EMAIL_FROM!,
         to,
         subject: "Reset your Meal Planner password",
