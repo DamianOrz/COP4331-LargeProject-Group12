@@ -513,4 +513,71 @@
   .secondary-link {
     width: 100%;
   }
+
 }
+
+
+  /* Compact weekly planner day selection */
+  .planner-assignment-form fieldset.day-selector {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 0 14px !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  
+  .planner-assignment-form fieldset.day-selector legend {
+    float: none !important;
+    width: auto !important;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+    text-align: left !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+  
+  .planner-assignment-form .day-checkboxes {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px 12px !important;
+    width: 100% !important;
+  }
+  
+  .planner-assignment-form .day-checkboxes label.day-checkbox {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 4px 0 !important;
+    gap: 7px !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+  
+  .planner-assignment-form .day-checkboxes input[type="checkbox"] {
+    all: revert !important;
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    flex: 0 0 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  .planner-assignment-form .day-checkboxes .day-checkbox span {
+    display: inline !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
