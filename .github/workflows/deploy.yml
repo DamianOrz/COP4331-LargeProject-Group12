@@ -13,6 +13,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install and test backend
+        working-directory: ./backend
+        run: |
+          bun install --frozen-lockfile
+          bun test
+
       # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,7 +38,9 @@ jobs:
         run: npm ci
       - name: Build frontend
         working-directory: ./frontend
-        run: npm run build
+        run: |
+          npm test
+          npm run build
         env:
           # Set the production API URL for the Vite build
           VITE_API_BASE_URL: /api
@@ -85,6 +98,13 @@ jobs:
             echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" > .env
             echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> .env
             echo "PORT=5000" >> .env
+            echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+            echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> .env
+            echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
+            echo "SMTP_SECURE=${{ secrets.SMTP_SECURE }}" >> .env
+            echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> .env
+            echo "SMTP_PASS=${{ secrets.SMTP_PASS }}" >> .env
+            echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
             # Install dependencies
             bun install --production
             # Ensure PM2 is installed globally

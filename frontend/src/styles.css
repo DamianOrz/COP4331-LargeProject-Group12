@@ -45,7 +45,7 @@ a {
   color: #20252d;
 }
 
-.brand span {
+.brand > span {
   font-size: 45px;
   line-height: 1;
   font-weight: 800;
@@ -61,26 +61,10 @@ a {
   box-shadow: 0 8px 18px rgba(41, 117, 55, 0.22);
 }
 
-.logo svg {
-  width: 58px;
-  height: 58px;
-}
-
-.logo rect {
-  fill: none;
-}
-
-.logo path,
-.logo circle {
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.about-link {
-  font-size: 20px;
+.logo > span {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 900;
 }
 
 .auth-card {
@@ -98,13 +82,7 @@ a {
   position: relative;
   min-height: 864px;
   background:
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.94) 0%,
-      rgba(255, 255, 255, 0.86) 34%,
-      rgba(255, 255, 255, 0.42) 68%,
-      rgba(255, 255, 255, 0.12) 100%
-    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.9) 36%, rgba(255, 255, 255, 0.2) 72%),
     url("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=85");
   background-position: center;
   background-size: cover;
@@ -448,26 +426,20 @@ a {
   color: #171d26;
 }
 
-.slim-brand span {
+.slim-brand > span {
   font-size: 13px;
   font-weight: 800;
 }
 
 .small-logo {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
   box-shadow: none;
 }
 
-.small-logo svg {
-  width: 15px;
-  height: 15px;
-}
-
-.small-logo path,
-.small-logo circle {
-  stroke-width: 5;
+.small-logo > span {
+  font-size: 10px;
 }
 
 .slim-header > a:last-child {
@@ -479,19 +451,22 @@ a {
 .simple-main {
   flex: 1;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   padding: 58px 20px;
 }
 
 .simple-form {
-  width: min(100%, 390px);
+  width: calc(100vw - 40px);
+  max-width: 500px;
+  min-width: 0;
   text-align: center;
 }
 
 .simple-form h1 {
   margin: 0 0 15px;
   color: #171d26;
-  font-size: 25px;
+  font-size: 32px;
   line-height: 1.15;
   font-weight: 800;
 }
@@ -499,7 +474,7 @@ a {
 .simple-form p {
   margin: 0 0 31px;
   color: #4f5661;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.55;
 }
 
@@ -510,16 +485,16 @@ a {
 
 .simple-form .field > label {
   margin-bottom: 8px;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .simple-form .input-wrap {
-  height: 41px;
+  height: 54px;
 }
 
 .simple-form .input-wrap input {
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .simple-form .eye-button {
@@ -534,10 +509,10 @@ a {
 }
 
 .small-button {
-  height: 38px;
+  height: 50px;
   margin-top: 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .simple-form .form-message {
@@ -759,23 +734,14 @@ a {
     gap: 14px;
   }
 
-  .brand span {
+  .brand > span {
     font-size: 31px;
   }
 
-  .logo {
+  .logo:not(.small-logo) {
     width: 54px;
     height: 54px;
     border-radius: 12px;
-  }
-
-  .logo svg {
-    width: 44px;
-    height: 44px;
-  }
-
-  .about-link {
-    font-size: 16px;
   }
 
   .image-panel {

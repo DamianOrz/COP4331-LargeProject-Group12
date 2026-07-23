@@ -275,6 +275,10 @@
   gap: 18px;
 }
 
+.change-password-panel {
+  max-width: 640px;
+}
+
 .recipe-form label,
 .recipe-form fieldset,
 .planner-assignment-form label,

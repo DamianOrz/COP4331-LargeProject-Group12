@@ -31,7 +31,7 @@ function AccountPage() {
 
         <div className="form-actions">
           <button className="planner-button" type="button" onClick={handleLogout}>Logout</button>
-          <Link className="secondary-link" to="/reset-password">Change Password</Link>
+          <Link className="secondary-link" to="/app/change-password">Change Password</Link>
         </div>
       </section>
     </AppShell>

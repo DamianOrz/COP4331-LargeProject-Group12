@@ -45,12 +45,7 @@ const weakPasswordMessage = "Password is too weak. Use at least 8 characters wit
 function Logo({ small = false }) {
   return (
     <div className={small ? "logo small-logo" : "logo"} aria-hidden="true">
-      <svg viewBox="0 0 64 64" role="img">
-        <rect x="7" y="9" width="50" height="50" rx="9" />
-        <path d="M18 6v10M46 6v10M18 18h28" />
-        <path d="M20 43 43 20M21 21l22 22" />
-        <path d="M17 25c5 4 9 4 13 0M39 17v12M35 20h8" />
-      </svg>
+      <span>MP</span>
     </div>
   );
 }
@@ -99,7 +94,6 @@ function Header() {
         <Logo />
         <span>Meal Planner</span>
       </a>
-      <span className="about-link">Meal Planning Made Simple</span>
     </header>
   );
 }
@@ -108,7 +102,6 @@ function Footer() {
   return (
     <footer className="footer">
       <span>&copy; 2026 Meal Planner</span>
-      <span>Healthy recipes • Weekly planning • Grocery organization</span>
     </footer>
   );
 }
@@ -751,7 +744,7 @@ function RegisterPage({ setPage }) {
           <Field
             id="register-first-name"
             label="First Name"
-            placeholder="Enter your first name"
+            placeholder="First name"
             icon="user"
             value={values.firstName}
             onChange={updateValue("firstName")}
@@ -761,7 +754,7 @@ function RegisterPage({ setPage }) {
           <Field
             id="register-last-name"
             label="Last Name"
-            placeholder="Enter your last name"
+            placeholder="Last name"
             icon="user"
             value={values.lastName}
             onChange={updateValue("lastName")}
@@ -817,7 +810,7 @@ function RegisterPage({ setPage }) {
               aria-invalid={Boolean(errors.terms)}
               aria-describedby={errors.terms ? "register-terms-error" : undefined}
             />
-            <span>I agree to use Meal Planner responsibly and protect my account information.</span>
+            <span>I agree to the Terms of Service and Privacy Policy.</span>
           </label>
           {errors.terms && <span className="field-error checkbox-error" id="register-terms-error">{errors.terms}</span>}
         </div>

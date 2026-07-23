@@ -23,6 +23,18 @@ const userSchema = new Schema({
     isEmailVerified: { 
         type: Boolean, 
         default: false 
+    },
+    verificationTokenHash: {
+        type: String
+    },
+    verificationTokenExpires: {
+        type: Date
+    },
+    passwordResetTokenHash: {
+        type: String
+    },
+    passwordResetTokenExpires: {
+        type: Date
     }
 }, {
     // Mongoose manages createdAt and updatedAt fields
