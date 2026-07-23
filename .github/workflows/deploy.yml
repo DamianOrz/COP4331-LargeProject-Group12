@@ -105,6 +105,7 @@ jobs:
             echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> .env
             echo "SMTP_PASS=${{ secrets.SMTP_PASS }}" >> .env
             echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
+            echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" >> .env
             # Install dependencies
             bun install --production
             # Ensure PM2 is installed globally
