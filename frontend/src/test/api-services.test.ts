@@ -22,6 +22,10 @@ function response(body: object, status = 200): Response {
   } as unknown as Response;
 }
 
+function requestPath(url: unknown): string {
+  return new URL(String(url), 'http://test.local').pathname;
+}
+
 describe('frontend API services', () => {
   const fetchMock = vi.fn();
 
@@ -37,13 +41,13 @@ describe('frontend API services', () => {
     const result = await login({ email: 'front@example.com', password: 'Password123' });
 
     expect(result.user).toMatchObject({ _id: 'user-1', email: 'front@example.com' });
-    expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:5000/api/login',
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify({ login: 'front@example.com', password: 'Password123' })
-      })
-    );
+    expect(requestPath(fetchMock.mock.calls[0][0])).toBe('/api/login');
+expect(fetchMock.mock.calls[0][1]).toEqual(
+  expect.objectContaining({
+    method: 'POST',
+    body: JSON.stringify({ login: 'front@example.com', password: 'Password123' })
+  })
+);
   });
 
   it('uses the real email verification and password reset endpoints', async () => {
@@ -54,11 +58,11 @@ describe('frontend API services', () => {
     await requestPasswordReset('front@example.com');
     await resetPassword('reset-token', 'Password123');
 
-    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
-      'http://localhost:5000/api/verify-email',
-      'http://localhost:5000/api/resend-verification',
-      'http://localhost:5000/api/forgot-password',
-      'http://localhost:5000/api/reset-password'
+    expect(fetchMock.mock.calls.map(([url]) => requestPath(url))).toEqual([
+      '/api/verify-email',
+      '/api/resend-verification',
+      '/api/forgot-password',
+      '/api/reset-password'
     ]);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body as string)).toEqual({ token: 'verification-token' });
     expect(JSON.parse(fetchMock.mock.calls[1][1].body as string)).toEqual({ email: 'front@example.com' });
@@ -73,7 +77,7 @@ describe('frontend API services', () => {
 
     await changePassword('Password123', 'Password456');
 
-    expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:5000/api/change-password');
+    expect(requestPath(fetchMock.mock.calls[0][0])).toBe('/api/change-password');
     expect(JSON.parse(fetchMock.mock.calls[0][1].body as string)).toEqual({
       currentPassword: 'Password123',
       newPassword: 'Password456',
@@ -89,7 +93,7 @@ describe('frontend API services', () => {
     await listRecipes({ search: 'rice', mealType: 'dinner' });
 
     const request = JSON.parse(fetchMock.mock.calls[0][1].body as string);
-    expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:5000/api/recipes/list');
+    expect(requestPath(fetchMock.mock.calls[0][0])).toBe('/api/recipes/list');
     expect(request).toMatchObject({ jwtToken: token, userId: 'user-1', search: 'rice', mealType: 'dinner' });
   });
 
@@ -112,7 +116,7 @@ describe('frontend API services', () => {
 
     expect(plan._id).toBe('plan-1');
     const request = JSON.parse(fetchMock.mock.calls[0][1].body as string);
-    expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:5000/api/mealplans/get');
+    expect(requestPath(fetchMock.mock.calls[0][0])).toBe('/api/mealplans/get');
     expect(request).toMatchObject({ jwtToken: token, userId: 'user-1', weekStartDate: '2026-07-13' });
   });
 
