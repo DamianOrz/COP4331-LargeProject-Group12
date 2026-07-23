@@ -142,6 +142,8 @@ function Field({
   disabled = false
 }) {
   const errorId = `${id}-error`;
+  const [showPassword, setShowPassword] = useState(false);
+  const inputType = withEye && showPassword ? "text" : type;
 
   return (
     <div className="field">
@@ -150,7 +152,7 @@ function Field({
         {icon && <Icon name={icon} />}
         <input
           id={id}
-          type={type}
+          type={inputType}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
@@ -159,10 +161,17 @@ function Field({
           aria-describedby={error ? errorId : undefined}
         />
         {withEye && (
-          <button className="eye-button" type="button" aria-label={`Show ${label.toLowerCase()}`} disabled={disabled}>
-            <Icon name="eye" />
-          </button>
-        )}
+  <button
+    className="eye-button"
+    type="button"
+    aria-label={`${showPassword ? "Hide" : "Show"} ${label.toLowerCase()}`}
+    aria-pressed={showPassword}
+    onClick={() => setShowPassword((current) => !current)}
+    disabled={disabled}
+  >
+    <Icon name="eye" />
+  </button>
+)}
       </div>
       {error && <span className="field-error" id={errorId}>{error}</span>}
     </div>

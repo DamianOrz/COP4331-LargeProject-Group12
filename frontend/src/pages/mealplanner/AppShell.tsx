@@ -19,7 +19,13 @@ const navItems = [
 function AppShell({ title, subtitle, action, children }: AppShellProps) {
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`);
+  const isActive = (path: string) => {
+    if (path === '/app') {
+      return location.pathname === '/app';
+    }
+  
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
 
   return (
     <div className="planner-app-shell">
@@ -30,9 +36,14 @@ function AppShell({ title, subtitle, action, children }: AppShellProps) {
         </Link>
         <nav className="planner-nav" aria-label="Primary navigation">
           {navItems.map((item) => (
-            <Link className={isActive(item.path) ? 'active' : ''} key={item.path} to={item.path}>
-              {item.label}
-            </Link>
+            <Link
+            className={isActive(item.path) ? 'active' : ''}
+            key={item.path}
+            to={item.path}
+            aria-current={isActive(item.path) ? 'page' : undefined}
+          >
+            {item.label}
+          </Link>
           ))}
         </nav>
       </header>
