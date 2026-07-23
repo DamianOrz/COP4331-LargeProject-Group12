@@ -99,7 +99,7 @@ function Header() {
         <Logo />
         <span>Meal Planner</span>
       </a>
-      <a className="about-link" href="#about">About</a>
+      <span className="about-link">Meal Planning Made Simple</span>
     </header>
   );
 }
@@ -108,8 +108,7 @@ function Footer() {
   return (
     <footer className="footer">
       <span>&copy; 2026 Meal Planner</span>
-      <a href="#privacy">Privacy Policy</a>
-      <a href="#terms">Terms of Service</a>
+      <span>Healthy recipes • Weekly planning • Grocery organization</span>
     </footer>
   );
 }
@@ -150,6 +149,8 @@ function Field({
   disabled = false
 }) {
   const errorId = `${id}-error`;
+  const [showPassword, setShowPassword] = useState(false);
+  const inputType = withEye && showPassword ? "text" : type;
 
   return (
     <div className="field">
@@ -158,7 +159,7 @@ function Field({
         {icon && <Icon name={icon} />}
         <input
           id={id}
-          type={type}
+          type={inputType}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
@@ -167,10 +168,17 @@ function Field({
           aria-describedby={error ? errorId : undefined}
         />
         {withEye && (
-          <button className="eye-button" type="button" aria-label={`Show ${label.toLowerCase()}`} disabled={disabled}>
-            <Icon name="eye" />
-          </button>
-        )}
+  <button
+    className="eye-button"
+    type="button"
+    aria-label={`${showPassword ? "Hide" : "Show"} ${label.toLowerCase()}`}
+    aria-pressed={showPassword}
+    onClick={() => setShowPassword((current) => !current)}
+    disabled={disabled}
+  >
+    <Icon name="eye" />
+  </button>
+)}
       </div>
       {error && <span className="field-error" id={errorId}>{error}</span>}
     </div>
@@ -809,7 +817,7 @@ function RegisterPage({ setPage }) {
               aria-invalid={Boolean(errors.terms)}
               aria-describedby={errors.terms ? "register-terms-error" : undefined}
             />
-            <span>I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>.</span>
+            <span>I agree to use Meal Planner responsibly and protect my account information.</span>
           </label>
           {errors.terms && <span className="field-error checkbox-error" id="register-terms-error">{errors.terms}</span>}
         </div>
