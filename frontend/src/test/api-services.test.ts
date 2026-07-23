@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { login, requestPasswordReset, resendVerificationEmail, resetPassword, verifyEmail } from '../api/authApi';
+import { changePassword, login, requestPasswordReset, resendVerificationEmail, resetPassword, verifyEmail } from '../api/authApi';
 import { getWeeklyMealPlan } from '../api/mealPlanApi';
 import { listRecipes } from '../api/recipeApi';
 
@@ -64,6 +64,21 @@ describe('frontend API services', () => {
     expect(JSON.parse(fetchMock.mock.calls[1][1].body as string)).toEqual({ email: 'front@example.com' });
     expect(JSON.parse(fetchMock.mock.calls[2][1].body as string)).toEqual({ email: 'front@example.com' });
     expect(JSON.parse(fetchMock.mock.calls[3][1].body as string)).toEqual({ token: 'reset-token', password: 'Password123' });
+  });
+
+  it('sends the current password, new password, and JWT when changing a password', async () => {
+    const token = makeToken();
+    localStorage.setItem('token_data', token);
+    fetchMock.mockResolvedValue(response({ message: 'Your password has been changed.', jwtToken: token }));
+
+    await changePassword('Password123', 'Password456');
+
+    expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:5000/api/change-password');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body as string)).toEqual({
+      currentPassword: 'Password123',
+      newPassword: 'Password456',
+      jwtToken: token
+    });
   });
 
   it('sends JWT, user, search, and meal-type fields when listing recipes', async () => {

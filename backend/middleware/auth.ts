@@ -5,10 +5,13 @@ import * as token from '../jwt';
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     const { jwtToken } = req.body;
 
-    if (typeof jwtToken !== `string` || token.isExpired(jwtToken)) {
+    const authUser = typeof jwtToken === 'string' ? token.verifyToken(jwtToken) : null;
+
+    if (!authUser) {
         return res.status(401).json({ error: "The JWT is no longer valid", jwtToken: '' });
     }
 
+    res.locals.authUser = authUser;
     res.locals.refreshedToken = token.refresh(jwtToken) ?? jwtToken;
     
     next();

@@ -5,6 +5,7 @@ import CardPage from './pages/CardPage';
 import MealPlannerAuthApp from './AuthApp';
 import ProtectedRoute from './ProtectedRoute';
 import AccountPage from './pages/mealplanner/AccountPage';
+import ChangePasswordPage from './pages/mealplanner/ChangePasswordPage';
 import DashboardPage from './pages/mealplanner/DashboardPage';
 import PlannerPage from './pages/mealplanner/PlannerPage';
 import RecipeDetailsPage from './pages/mealplanner/RecipeDetailsPage';
@@ -22,6 +23,7 @@ function App() {
         <ProtectedRoute path="/app/recipes/:recipeId" exact component={RecipeDetailsPage} />
         <ProtectedRoute path="/app/planner" exact component={PlannerPage} />
         <ProtectedRoute path="/app/account" exact component={AccountPage} />
+        <ProtectedRoute path="/app/change-password" exact component={ChangePasswordPage} />
 
         <Route path="/dashboard" exact>
           <Redirect to="/app" />

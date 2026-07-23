@@ -68,3 +68,7 @@ export async function requestPasswordReset(email: string): Promise<{ message: st
 export async function resetPassword(token: string, password: string): Promise<{ message: string }> {
   return postApi<{ message: string }>('reset-password', { token, password }, false);
 }
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  return postApi<{ message: string }>('change-password', { currentPassword, newPassword });
+}
